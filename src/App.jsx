@@ -1,7 +1,8 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import Header from './components/Header'
 import ProductCard from './components/ProductCard'
 import CartDrawer from './components/CartDrawer'
+import Hero from './components/Hero'
 
 const API_BASE = import.meta.env.VITE_BACKEND_URL || 'http://localhost:8000'
 
@@ -13,6 +14,7 @@ function App() {
   const [cart, setCart] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
+  const productsRef = useRef(null)
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -101,20 +103,26 @@ function App() {
     }
   }
 
+  const scrollToProducts = () => {
+    productsRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+  }
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-cyan-50">
+    <div className="min-h-screen bg-[#07070a]">
       <Header cartCount={cartCount} onSearch={setQuery} onOpenCart={() => setCartOpen(true)} />
 
-      <main className="max-w-6xl mx-auto px-4 py-6">
-        <section className="mb-6 bg-white rounded-xl p-6 border border-blue-100 shadow-sm">
-          <h2 className="text-2xl font-bold mb-2 text-blue-700">Welcome to Blue Shop</h2>
-          <p className="text-gray-600">Discover products and add them to your cart. This is a simple demo shop with a working backend.</p>
+      <Hero onShopClick={scrollToProducts} />
+
+      <main ref={productsRef} className="max-w-7xl mx-auto px-4 py-8">
+        <section className="mb-6 bg-[#0b0b0f] rounded-xl p-6 border border-purple-900/40 shadow-xl shadow-black/40">
+          <h2 className="text-2xl font-bold mb-2 text-purple-100">Featured products</h2>
+          <p className="text-purple-300/80">Discover products and add them to your cart. This demo shop is fully functional with a live backend.</p>
         </section>
 
         {loading ? (
-          <p className="text-gray-600">Loading products...</p>
+          <p className="text-purple-300/70">Loading products...</p>
         ) : error ? (
-          <p className="text-red-600">{error}</p>
+          <p className="text-fuchsia-400">{error}</p>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
             {filtered.map((p) => (
@@ -123,6 +131,17 @@ function App() {
           </div>
         )}
       </main>
+
+      <footer className="border-t border-purple-900/40 bg-[#0b0b0f]">
+        <div className="max-w-7xl mx-auto px-4 py-8 text-sm text-purple-300/70 flex flex-col md:flex-row items-center justify-between gap-3">
+          <p>© {new Date().getFullYear()} Nova Black. All rights reserved.</p>
+          <div className="flex items-center gap-4">
+            <a className="hover:text-purple-200" href="#">Privacy</a>
+            <a className="hover:text-purple-200" href="#">Terms</a>
+            <a className="hover:text-purple-200" href="/test">System status</a>
+          </div>
+        </div>
+      </footer>
 
       <CartDrawer
         open={cartOpen}
